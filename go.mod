@@ -1,3 +1,3 @@
-module github.com/ThirdWinter/GO
+module github.com/ThirdWinter/Go
 
 go 1.21.5
