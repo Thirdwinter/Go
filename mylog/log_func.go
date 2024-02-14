@@ -81,8 +81,6 @@ func (l *LogInit) OpenFile() {
 
 // Log rotation based on size
 // 日志按照大小切割
-// 日志按照大小切割
-// 日志按照大小切割
 func (l *LogInit) cut() *os.File {
 	fi, err := os.Stat(fmt.Sprintf("%s%s%s", l.FailPath, l.FailName, l.Suffixname))
 	if err != nil {
