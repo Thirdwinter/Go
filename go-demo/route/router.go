@@ -12,7 +12,7 @@ func Router() *gin.Engine {
 	})
 	user := r.Group("/user")
 	{
-		user.GET("/info/:id/:name", controllers.UserContraller{}.GetUserInfo)
+		user.GET("/info/:id", controllers.UserContraller{}.GetUserInfo)
 		user.POST("/list", controllers.UserContraller{}.GetList)
 
 		user.PUT("/add", func(ctx *gin.Context) {

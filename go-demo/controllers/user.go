@@ -1,16 +1,26 @@
 package controllers
 
 import (
-	_ "github.com/ThirdWinter/Go/log"
+	"strconv"
+
+	"github.com/ThirdWinter/Go/go-demo/models"
+	"github.com/ThirdWinter/Go/mylog"
 	"github.com/gin-gonic/gin"
 )
 
 type UserContraller struct{}
 
 func (u UserContraller) GetUserInfo(c *gin.Context) {
-	id := c.Param("id")
+	idstr := c.Param("id")
 	name := c.Param("name")
-	ReturnSucces(c, 0, id, name, 2)
+	id,err:=strconv.Atoi(idstr)
+	if err!=nil{
+		log.Error("user id return error:%s", err)
+		return
+	}
+	user,_:=models.GetUserTest(id)
+
+	ReturnSucces(c, 0,name, user, 1)
 }
 
 func (u UserContraller) GetList(c *gin.Context) {
