@@ -14,7 +14,7 @@ func Router() *gin.Engine {
 	{
 		user.GET("/info/:id", controllers.UserContraller{}.GetUserInfo)
 		user.POST("/list", controllers.UserContraller{}.GetList)
-		user.POST("/list/test",controllers.UserContraller{}.GetUserListTest)
+		user.POST("/list/test", controllers.UserContraller{}.GetUserListTest)
 
 		user.POST("/add", controllers.UserContraller{}.AddUesr)
 		user.POST("/update", controllers.UserContraller{}.UpdateUser)

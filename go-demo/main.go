@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ThirdWinter/Go/go-demo/route"
-	"github.com/ThirdWinter/Go/mylog"
+	log "github.com/ThirdWinter/Go/mylog"
 )
 
 func main() {

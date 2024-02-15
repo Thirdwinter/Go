@@ -26,53 +26,52 @@ func (u UserContraller) GetUserInfo(c *gin.Context) {
 func (u UserContraller) AddUesr(c *gin.Context) {
 	// var err error
 	username := c.DefaultPostForm("username", "")
-	idstr:=c.DefaultPostForm("id", "9090")
+	idstr := c.DefaultPostForm("id", "9090")
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
 		log.Error("user id return error:%s", err)
 		return
 	}
-	uid, err := models.AddUesr(username,id)
+	uid, err := models.AddUesr(username, id)
 	if err != nil {
 		ReturnError(c, 4002, "保存错误")
 	}
 	ReturnSucces(c, 0, "保存成功", uid, 1)
 }
 
-func (u UserContraller) UpdateUser(c *gin.Context){
+func (u UserContraller) UpdateUser(c *gin.Context) {
 	username := c.DefaultPostForm("username", "")
-	idstr:=c.DefaultPostForm("id", "")
+	idstr := c.DefaultPostForm("id", "")
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
 		log.Error("user id return error:%s", err)
 		return
 	}
-	models.UpdateUser(id, username )
+	models.UpdateUser(id, username)
 	ReturnSucces(c, 0, "更新成功", id, 1)
 }
 
-func (u UserContraller) DeleteUser(c *gin.Context){
-	idstr:=c.DefaultPostForm("id", "")
+func (u UserContraller) DeleteUser(c *gin.Context) {
+	idstr := c.DefaultPostForm("id", "")
 	id, _ := strconv.Atoi(idstr)
-	
-	err:=models.DeleteUser(id)
-	if err!=nil{
+
+	err := models.DeleteUser(id)
+	if err != nil {
 		ReturnError(c, 4002, "删除错误")
 		return
 	}
 	ReturnSucces(c, 0, "删除成功", true, 0)
 }
 
-
-func (u UserContraller) GetUserListTest(c *gin.Context){
-	numstr:=c.DefaultPostForm("num", "")
-	num,_:=strconv.Atoi(numstr)
-	users,err:=models.GetUserListTest(num)
-	if err !=nil||len(users)==0{
+func (u UserContraller) GetUserListTest(c *gin.Context) {
+	numstr := c.DefaultPostForm("num", "")
+	num, _ := strconv.Atoi(numstr)
+	users, err := models.GetUserListTest(num)
+	if err != nil || len(users) == 0 {
 		ReturnError(c, 404, "无相关数据")
 		return
 	}
-	n:=len(users)
+	n := len(users)
 	ReturnSucces(c, 200, "获取成功", users, int64(n))
 }
 
