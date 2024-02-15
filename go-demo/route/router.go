@@ -14,14 +14,12 @@ func Router() *gin.Engine {
 	{
 		user.GET("/info/:id", controllers.UserContraller{}.GetUserInfo)
 		user.POST("/list", controllers.UserContraller{}.GetList)
+		user.POST("/list/test",controllers.UserContraller{}.GetUserListTest)
 
-		user.PUT("/add", func(ctx *gin.Context) {
-			ctx.String(200, "put")
-		})
+		user.POST("/add", controllers.UserContraller{}.AddUesr)
+		user.POST("/update", controllers.UserContraller{}.UpdateUser)
 
-		user.DELETE("/delete", func(ctx *gin.Context) {
-			ctx.String(200, "delete")
-		})
+		user.POST("/delete", controllers.UserContraller{}.DeleteUser)
 	}
 
 	order := r.Group("/order")
