@@ -2,13 +2,16 @@ package controllers
 
 import (
 	"strconv"
-
 	"github.com/ThirdWinter/Go/go-demo/models"
 	log "github.com/ThirdWinter/Go/mylog"
 	"github.com/gin-gonic/gin"
 )
 
 type UserContraller struct{}
+
+func init(){
+	log.InitLog.Init(true, "Asia/Shanghai", "debug", "./", "log", ".log", 0644, 10*1024)
+}
 
 func (u UserContraller) GetUserInfo(c *gin.Context) {
 	idstr := c.Param("id")
@@ -69,9 +72,11 @@ func (u UserContraller) GetUserListTest(c *gin.Context) {
 	users, err := models.GetUserListTest(num)
 	if err != nil || len(users) == 0 {
 		ReturnError(c, 404, "无相关数据")
+		log.Debug("%#v\n", len(users))
 		return
 	}
 	n := len(users)
+	log.Error("%#v\n", users)
 	ReturnSucces(c, 200, "获取成功", users, int64(n))
 }
 
