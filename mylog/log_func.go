@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	DEBUG   uint8 = iota //0
-	TRACE                //1
-	INFO                 //2
-	WARNING              //3
-	ERROR                //4
-	FATAL                //5
+	debug   uint8 = iota //0
+	trace                //1
+	info                 //2
+	warning              //3
+	err                  //4
+	fatal                //5
 )
 
 type LogInit struct {
@@ -107,9 +107,6 @@ func (l *LogInit) cut() *os.File {
 	return l.Fail
 }
 
-
-
-
 // Log content
 func (l *LogInit) Write(Leave string, format string, a ...interface{}) {
 	pc, file, lineNo, ok := runtime.Caller(2)
@@ -131,45 +128,45 @@ func (l *LogInit) Write(Leave string, format string, a ...interface{}) {
 	if !l.OutFile {
 		fmt.Print(logMsg)
 	} else {
-        l.OpenFile()
-        fileobj := l.cut() // Cut the log file here
-        defer fileobj.Close() // Close the fileobj when the function returns
-        fmt.Fprint(fileobj, logMsg)
-    }
+		l.OpenFile()
+		fileobj := l.cut()    // Cut the log file here
+		defer fileobj.Close() // Close the fileobj when the function returns
+		fmt.Fprint(fileobj, logMsg)
+	}
 }
 
 func Debug(format string, a ...interface{}) {
-	if InitLog.Leave <= DEBUG {
+	if InitLog.Leave <= debug {
 		InitLog.Write("DEBUG", format, a...)
 	}
 }
 
 func Trace(format string, a ...interface{}) {
-	if InitLog.Leave <= TRACE {
+	if InitLog.Leave <= trace {
 		InitLog.Write("TRACE", format, a...)
 	}
 }
 
 func Info(format string, a ...interface{}) {
-	if InitLog.Leave <= INFO {
+	if InitLog.Leave <= info {
 		InitLog.Write("INFO", format, a...)
 	}
 }
 
 func Warning(format string, a ...interface{}) {
-	if InitLog.Leave <= WARNING {
+	if InitLog.Leave <= warning {
 		InitLog.Write("WARNING", format, a...)
 	}
 }
 
 func Error(format string, a ...interface{}) {
-	if InitLog.Leave <= ERROR {
+	if InitLog.Leave <= err {
 		InitLog.Write("ERROR", format, a...)
 	}
 }
 
 func Fatal(format string, a ...interface{}) {
-	if InitLog.Leave <= FATAL {
+	if InitLog.Leave <= fatal {
 		InitLog.Write("FATAL", format, a...)
 	}
 }
