@@ -5,5 +5,5 @@ type Logger struct {
 	Level string `yaml:"loglevel"`
 	Path  string `yaml:"logpath"`
 	Name  string `yaml:"logname"`
-	Size  int64    `yaml:"logsize"`
+	Size  int64  `yaml:"logsize"`
 }
