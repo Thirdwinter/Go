@@ -29,7 +29,7 @@ func AddCategory(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"status": code,
 		//"data":   data,
-		"msg":    errmsg.GetErrMsg(code),
+		"msg": errmsg.GetErrMsg(code),
 	})
 
 }
@@ -46,11 +46,12 @@ func GetCategory(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = -1 // 为-1时，gorm默认取消Limit分页功能
 	}
-	data := models.GetCategory(pageSize, pageNum) // 返回一个[]user
+	data, total := models.GetCategory(pageSize, pageNum) // 返回一个[]user
 	code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
 		"status": code,
 		"data":   data,
+		"total":  total,
 		"msg":    errmsg.GetErrMsg(code),
 	})
 }
@@ -58,18 +59,18 @@ func GetCategory(c *gin.Context) {
 // 编辑分类
 func EditCategory(c *gin.Context) {
 	var data models.Category
-	id,_:=strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
 	c.ShouldBindJSON(&data)
-	code =models.CheckCategoryEdit(data.Name,int(data.ID))
-	if code == errmsg.SUCCESS{
+	code = models.CheckCategoryEdit(data.Name, int(data.ID))
+	if code == errmsg.SUCCESS {
 		models.EditCategory(id, &data)
 	}
-	if code == errmsg.ERROR_CATENAME_USED{
+	if code == errmsg.ERROR_CATENAME_USED {
 		c.Abort()
 	}
 	c.JSON(200, gin.H{
-		"status":code,
-		"msg":errmsg.GetErrMsg(code),
+		"status": code,
+		"msg":    errmsg.GetErrMsg(code),
 	})
 }
 

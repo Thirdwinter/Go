@@ -40,11 +40,12 @@ func GetCateArt(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = -1 // 为-1时，gorm默认取消Limit分页功能
 	}
-	data,code:=models.GetCateArt(id, pageSize, pageNum)
+	data, code, total := models.GetCateArt(id, pageSize, pageNum)
 	c.JSON(200, gin.H{
-		"status":code,
-		"data":data,
-		"msg":errmsg.GetErrMsg(code),
+		"status": code,
+		"data":   data,
+		"total":  total,
+		"msg":    errmsg.GetErrMsg(code),
 	})
 }
 
@@ -69,11 +70,12 @@ func GetArticle(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = -1 // 为-1时，gorm默认取消Limit分页功能
 	}
-	data, code := models.GetArts(pageSize, pageNum) // 返回一个[]user
+	data, code, total := models.GetArts(pageSize, pageNum) // 返回一个[]user
 	//code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
 		"status": code,
 		"data":   data,
+		"total":  total,
 		"msg":    errmsg.GetErrMsg(code),
 	})
 }

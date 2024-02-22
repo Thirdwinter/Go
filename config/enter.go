@@ -1,4 +1,4 @@
-// !congit包存放配置信息
+// !config包存放配置信息
 package config
 
 type Config struct {

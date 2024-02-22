@@ -5,6 +5,7 @@ import (
 
 	"github.com/ThirdWinter/Go/gvb_server/models"
 	"github.com/ThirdWinter/Go/gvb_server/utils/errmsg"
+	"github.com/ThirdWinter/Go/gvb_server/utils/validator"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,8 +18,19 @@ func UserExist(c *gin.Context) {
 
 // 添加用户
 func AddUser(c *gin.Context) {
+	var msg string
 	var data models.User
 	_ = c.ShouldBindJSON(&data)
+
+	msg, code = validator.Validate(&data)
+	if code != errmsg.SUCCESS {
+		c.JSON(200, gin.H{
+			"status": code,
+			"msg":    msg,
+		})
+		return
+	}
+
 	code = models.CheckUser(data.Username)
 	if code == errmsg.SUCCESS {
 		models.CreateUser(&data)
@@ -28,8 +40,8 @@ func AddUser(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"status": code,
-		"data":   data,
-		"msg":    errmsg.GetErrMsg(code),
+		//"data":   data,
+		"msg": errmsg.GetErrMsg(code),
 	})
 
 }
@@ -46,11 +58,12 @@ func GetUsers(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = -1 // 为-1时，gorm默认取消Limit分页功能
 	}
-	data := models.GetUsers(pageSize, pageNum) // 返回一个[]user
+	data, total := models.GetUsers(pageSize, pageNum) // 返回一个[]user
 	code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
 		"status": code,
 		"data":   data,
+		"total":  total,
 		"msg":    errmsg.GetErrMsg(code),
 	})
 }

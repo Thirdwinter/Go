@@ -29,34 +29,35 @@ func CreateArt(data *Article) (code int) {
 }
 
 // 查询分类下所有文章
-func GetCateArt(id int,pageSize int, pageNum int)([]Article,int){
+func GetCateArt(id int, pageSize int, pageNum int) ([]Article, int, int) {
 	var catArtList []Article
-	err:=global.Db.Preload("Category").Limit(pageSize).Offset((pageNum-1)*pageSize).Where("Cid=?",id).Find(&catArtList).Error
+	var total int
+	err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum-1)*pageSize).Where("Cid=?", id).Find(&catArtList).Count(&total).Error
 	if err != nil {
-		return nil,errmsg.ERROR_CATE_NOT_EXIST
+		return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
 	}
-	return catArtList,errmsg.SUCCESS
+	return catArtList, errmsg.SUCCESS, total
 }
 
 // 查询单个文章
-func GetArtInfo(id int) (Article,int){
+func GetArtInfo(id int) (Article, int) {
 	var art Article
-	err:=global.Db.Preload("Category").Where("id=?",id).First(&art).Error
+	err := global.Db.Preload("Category").Where("id=?", id).First(&art).Error
 	if err != nil {
-		return art,errmsg.ERROR_ART_NOT_EXIST
+		return art, errmsg.ERROR_ART_NOT_EXIST
 	}
-	return art,errmsg.SUCCESS
+	return art, errmsg.SUCCESS
 }
 
-
 // 查询文章列表
-func GetArts(pageSize int, pageNum int) ([]Article,int) {
+func GetArts(pageSize int, pageNum int) ([]Article, int, int) {
 	var arts []Article
-	err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&arts).Error
+	var total int
+	err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&arts).Count(&total).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil,errmsg.ERROR
+		return nil, errmsg.ERROR, 0
 	}
-	return arts,errmsg.SUCCESS
+	return arts, errmsg.SUCCESS, total
 }
 
 // 编辑文章
