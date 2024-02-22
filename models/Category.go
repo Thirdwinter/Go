@@ -36,7 +36,7 @@ func CheckCategoryEdit(Name string, ID int) (code int) {
 func CreateCategory(data *Category) (code int) {
 	err := global.Db.Create(&data).Error
 	if err != nil {
-		log.Error("create user error: %s", err)
+		log.Error("create Category error: %s", err)
 		return errmsg.ERROR
 	}
 	return errmsg.SUCCESS

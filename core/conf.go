@@ -22,6 +22,7 @@ func InitConf() {
 	if err != nil {
 		log.Fatalf("config init Unmarshal error %s", err)
 	}
-	log.Println("log config init success.")
+	//log.Println("log config init success.")
 	global.Config = c
+	//log.Println(c)
 }

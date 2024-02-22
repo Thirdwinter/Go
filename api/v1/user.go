@@ -58,18 +58,18 @@ func GetUsers(c *gin.Context) {
 // 编辑用户
 func EditUser(c *gin.Context) {
 	var data models.User
-	id,_:=strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
 	c.ShouldBindJSON(&data)
-	code =models.CheckUserEdit(data.Username,id)
-	if code == errmsg.SUCCESS{
+	code = models.CheckUserEdit(data.Username, id)
+	if code == errmsg.SUCCESS {
 		models.EditUser(id, &data)
 	}
-	if code == errmsg.ERROR_USERNAME_USED{
+	if code == errmsg.ERROR_USERNAME_USED {
 		c.Abort()
 	}
 	c.JSON(200, gin.H{
-		"status":code,
-		"msg":errmsg.GetErrMsg(code),
+		"status": code,
+		"msg":    errmsg.GetErrMsg(code),
 	})
 }
 
