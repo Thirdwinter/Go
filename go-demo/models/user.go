@@ -19,8 +19,8 @@ func GetUserTest(id int) (User, error) {
 	return user, err
 }
 
-func AddUesr(usernaem string, id int) (int, error) {
-	user := User{Username: usernaem, Id: id}
+func AddUser(username string, id int) (int, error) {
+	user := User{Username: username, Id: id}
 	err := dao.Db.Create(&user).Error
 	return user.Id, err
 }

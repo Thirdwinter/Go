@@ -1,16 +1,16 @@
 package controllers
 
 import (
-	"strconv"
 	"github.com/ThirdWinter/Go/go-demo/models"
 	log "github.com/ThirdWinter/Go/mylog"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type UserContraller struct{}
 
 func init(){
-	log.InitLog.Init(true, "Asia/Shanghai", "debug", "./", "log", ".log", 0644, 10*1024)
+	log.Init(true, "debug", "./", "log.log", 10240)
 }
 
 func (u UserContraller) GetUserInfo(c *gin.Context) {
@@ -35,7 +35,7 @@ func (u UserContraller) AddUesr(c *gin.Context) {
 		log.Error("user id return error:%s", err)
 		return
 	}
-	uid, err := models.AddUesr(username, id)
+	uid, err := models.AddUser(username, id)
 	if err != nil {
 		ReturnError(c, 4002, "保存错误")
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	log.InitLog.Init(true, "Asia/Shanghai", "debug", "./", "log", ".log", 0644, 10*1024)
+	log.Init(true,  "debug", "./", "log.log", 10*1024)
 	r := route.Router()
 	err := r.Run(":8080")
 	if err != nil {
