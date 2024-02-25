@@ -1,5 +1,4 @@
-//import Antd from 'ant-design-vue';
-//import { Button } from 'ant-design-vue';
-//import Vue from 'vue'
+// import Antd, { App } from 'ant-design-vue';
 
-//Vue.use(Antd)
+
+// App.use(Antd)

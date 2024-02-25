@@ -1,18 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import LoginView from '../views/login.vue'
-import AdminView from '../views/admin.vue'
 
-const routes = [
-  {
-    path: '/',
-    name: 'LoginView',
-    component: LoginView
-  },
-  {
-    path: '/admin',
-    name: 'AdminView',
-    component: AdminView
-  },
+
+let routes = [
+  { path: "/login", component: () => import("../views/login.vue") },
+  { path: "/admin", component: () => import("../views/AdminView.vue") }
 ]
 
 const router = createRouter({
@@ -20,4 +11,4 @@ const router = createRouter({
   routes
 })
 
-export default router
+export { router,routes }

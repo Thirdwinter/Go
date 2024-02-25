@@ -1,13 +1,26 @@
 import { createApp } from 'vue';
-import App from './App';
-import router from './router'
+import App from './App.vue';
+import { router } from './router/index';
+import { createPinia } from "pinia";
 import axios from 'axios';
+import naive from 'naive-ui/es/preset';
 import Antd from 'ant-design-vue';
-// import 'ant-design-vue/dist/reset.css';
-import antui from '../src/plugins/antui'
+import './assets/css/style.css';
+import { UserOutlined,LockOutlined} from '@ant-design/icons-vue';
 
 
-const app = createApp(App)
+
+const pinia = createPinia();
 axios.defaults.baseURL = 'http://localhost:8080/api/v1';
-app.use(router).use(antui).use(Antd).provide('axios', axios).mount('#app');
+const app = createApp(App)
+app.component('UserOutlined', UserOutlined);
+app.component('LockOutlined', LockOutlined);
+
+app.use(router)
+app.use(pinia)
+app.use(Antd)
+app.use(naive)
+app.provide('axios', axios)
+app.mount('#app');
+
 
