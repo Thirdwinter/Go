@@ -9,7 +9,7 @@ import (
 
 func Login(c *gin.Context){
 	var data models.User
-	c.ShouldBindJSON(&data)
+	_ = c.ShouldBindJSON(&data)
 	var token string
 	var code int
 	code=models.CheckLogin(data.Username, data.Password)

@@ -11,7 +11,7 @@ import (
 
 var code int
 
-// 查询用户是否存在
+// UserExist 查询用户是否存在
 func UserExist(c *gin.Context) {
 
 }
@@ -45,8 +45,6 @@ func AddUser(c *gin.Context) {
 	})
 
 }
-
-// 查询用户
 
 // 查询用户列表
 func GetUsers(c *gin.Context) {

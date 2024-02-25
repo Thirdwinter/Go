@@ -106,7 +106,6 @@ func DeleteArticle(c *gin.Context) {
 		})
 		return
 	}
-
 	c.JSON(200, gin.H{
 		"status": code,
 		"data":   "",
