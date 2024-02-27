@@ -1,100 +1,50 @@
-<!-- <template>
-  <div class="container">
-    <a-form
-    :model="formdata"
-    name="formdata"
-    :label-col="{ span: 8 }"
-    :wrapper-col="{ span: 16 }"
-    :rules="rules"
-    autocomplete=align
-    class="loginBox"
-    style="display: flex; flex-direction: column; justify-content: center; align-items: center;"
-  >
-    <a-form-item name="username">
-      <a-input 
-      :model:value="formdata.username" 
-      placeholder="Username"
-      style="width: 200%;"      
-      >
-        <template #prefix><UserOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
-      </a-input>
-    </a-form-item>
+<template>
+  <div class="menus">
+    <n-anchor
+        affix
+        listen-to=".document-scroll-container"
+        :trigger-top="24"
+        :top="88"
+        style="z-index: 1"
+        :bound="24"
+    >
+      <div style="height: 100px">
+        <n-anchor-link :title="'你好!  '+myname" style="margin-bottom: 55px" />
+      </div>
+      <n-anchor-link title="用户管理" style="margin-bottom: 25px" href="admin/test"/>
+      <n-anchor-link title="分类管理" style="margin-bottom: 25px" />
+      <n-anchor-link title="文章管理" style="margin-bottom: 25px" />
+      <n-anchor-link title="退出" style="margin-bottom: 25px" @click="liuleliule"/>
+    </n-anchor>
+  </div>
+  <div style="padding: 10px;width: 100%;background-color: black">
+    <router-view>
 
-    <a-form-item name="password">
-      <a-input 
-      :model:value="formdata.password" 
-      type="password" 
-      placeholder="Password"
-      style="width: 200%;"
-      >
-        <template #prefix><LockOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
-      </a-input>
-    </a-form-item>
-
-    <a-form-item>
-      <a-button
-        type="primary"
-        class="loginBtn"
-      >
-        Log in
-      </a-button>
-    </a-form-item>
-  </a-form>
+    </router-view>>
   </div>
 </template>
-
-
-
-<script>
-export default({
-  name: 'LoginView',
-  data() {
-    return {
-      formdata: {
-        username:'',
-        password:''
-      },
-      
-      rules: {
-        username: [
-          { required: true, message: "请输入用户名", trigger: 'blur' },
-          { min:4,max:12,message:"限制4-12位",trigger:'blur' },
-        ],
-        password: [
-          { required: true, message: "请输入密码", trigger: 'blur' },
-          { min:6,max:20,message:"限制6-20位",trigger:'blur' },
-        ],
-      },
+<style>
+.menus{
+  height: 100vh;
+  width: 150px;
+  background-color: bisque;
+  div{
+    cursor:pointer;
+    &:hover{
+      color: #42b983;
     }
   }
-});
+}
+</style>
+
+
+<script setup>
+import {useRouter} from "vue-router";
+const router = useRouter()
+const myname = localStorage.getItem("username");
+const liuleliule=()=>{
+  localStorage.removeItem('token');
+  router.push("/login")
+
+}
 </script>
-<style scoped>
-.container{
-  height: 100%;
-  background-color: aqua;
-}
-.loginBox{
-  width: 35%;
-  height: 45%;
-  background-color:antiquewhite;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  border-radius: 9px;
-
-}
-.loginForm{
-  width: 100%;
-  position: absolute;
-  bottom: 10%;
-  padding: 0,20px;
-  box-sizing: border-box;
-} 
-.loginBtn{
-  display: flex;
-  justify-content: flex-end;
-
-}
-</style> -->

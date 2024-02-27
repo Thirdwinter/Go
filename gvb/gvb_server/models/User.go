@@ -2,13 +2,14 @@ package models
 
 import (
 	"encoding/base64"
+	"errors"
 
 	"github.com/ThirdWinter/Go/gvb_server/global"
 	"github.com/ThirdWinter/Go/gvb_server/utils/errmsg"
 	log "github.com/ThirdWinter/Go/mylog"
+	_ "github.com/go-playground/validator/v10"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/scrypt"
-	_"github.com/go-playground/validator/v10"
 )
 
 type User struct {
@@ -43,11 +44,12 @@ func CheckUser(username string) (code int) {
 	}
 	return errmsg.SUCCESS
 }
+
 // 更新时检查用户名是否重复
-func CheckUserEdit(username string,id int) (code int) {
+func CheckUserEdit(username string, id int) (code int) {
 	var users User
 	global.Db.Select("id").Where("username=?", username).First(&users)
-	if users.ID > 0 &&users.ID!=uint(id){
+	if users.ID > 0 && users.ID != uint(id) {
 		return errmsg.ERROR_USERNAME_USED
 	}
 	return errmsg.SUCCESS
@@ -65,24 +67,36 @@ func CreateUser(data *User) (code int) {
 }
 
 // 查询用户列表
-func GetUsers(pageSize int, pageNum int) ([]User,int) {
+func GetUsers(pageSize int, pageNum int) ([]User, int) {
 	var users []User
 	var total int
-	err := global.Db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&users).Count(&total).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil,0
+	var err error
+	if pageNum <= 0 {
+		pageNum = 1
 	}
-	return users,total
+	offset := (pageNum - 1) * pageSize
+	err = global.Db.Limit(pageSize).Offset(offset).Find(&users).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return users, 0
+		}
+		return nil, 0
+	}
+	err = global.Db.Model(&User{}).Count(&total).Error
+	if err != nil {
+		return nil, 0
+	}
+	return users, total
 }
 
 // 编辑用户信息 //不能改密码
-func EditUser(id int, data *User) int{
+func EditUser(id int, data *User) int {
 	var user User
 	// 使用结构体更新，gorm不会更新0值数据
 	var maps = make(map[string]interface{})
 	maps["username"] = data.Username
 	maps["role"] = data.Role
-	err:=global.Db.Model(&user).Where("id=?",id).Update(maps).Error
+	err := global.Db.Model(&user).Where("id=?", id).Update(maps).Error
 	if err != nil {
 		return errmsg.ERROR
 	}
@@ -100,16 +114,15 @@ func DeleteUser(id int) int {
 	return errmsg.SUCCESS
 }
 
-
 // 登录验证
-func CheckLogin(username string, password string) int{
+func CheckLogin(username string, password string) int {
 	var user User
-	global.Db.Where("username=?",username).First(&user)
+	global.Db.Where("username=?", username).First(&user)
 
 	if user.ID == 0 {
 		return errmsg.ERROR_USER_NOT_EXIST
 	}
-	if password == ""{
+	if password == "" {
 		return errmsg.ERROR_PASSWORD_NO_EXIST
 	}
 	encryptedPassword := ScryptPw(password) // 对输入的密码进行加密
@@ -117,7 +130,7 @@ func CheckLogin(username string, password string) int{
 	if encryptedPassword != user.Password {
 		return errmsg.ERROR_PASSWORD_WRONG
 	}
-	if user.Role != 1{
+	if user.Role != 1 {
 		return errmsg.ERROR_USER_NO_RIGHT
 	}
 	return errmsg.SUCCESS
