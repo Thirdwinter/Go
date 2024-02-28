@@ -70,7 +70,7 @@ func GetArticle(c *gin.Context) {
 	if pageNum == 0 {
 		pageNum = -1 // 为-1时，gorm默认取消Limit分页功能
 	}
-	data, code, total := models.GetArts(pageSize, pageNum) // 返回一个[]user
+	data, code, total := models.GetArts(pageSize, pageNum)
 	//code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
 		"status": code,

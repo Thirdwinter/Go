@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"github.com/ThirdWinter/Go/gvb_server/global"
 	"github.com/ThirdWinter/Go/gvb_server/utils/errmsg"
 	log "github.com/ThirdWinter/Go/mylog"
@@ -43,14 +44,36 @@ func CreateCategory(data *Category) (code int) {
 }
 
 // 查询分类列表
-func GetCategory(pageSize int, pageNum int) ([]Category, int) {
-	var cates []Category
+func GetCategory(pageSize int, pageNum int) ([]Category, int, int) {
+	//var cates []Category
+	//var total int
+	//err := global.Db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&cates).Count(&total).Error
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return nil, 0
+	//}
+	//return cates, total
+	var categories []Category
 	var total int
-	err := global.Db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&cates).Count(&total).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, 0
+	var err error
+
+	if pageNum <= 0 {
+		pageNum = 1
 	}
-	return cates, total
+
+	err = global.Db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&categories).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+		}
+		return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+	}
+
+	err = global.Db.Model(&Category{}).Count(&total).Error
+	if err != nil {
+		return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+	}
+
+	return categories, errmsg.SUCCESS, total
 }
 
 // 编辑分类信息

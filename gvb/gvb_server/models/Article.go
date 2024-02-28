@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"github.com/ThirdWinter/Go/gvb_server/global"
 	"github.com/ThirdWinter/Go/gvb_server/utils/errmsg"
 	log "github.com/ThirdWinter/Go/mylog"
@@ -30,9 +31,28 @@ func CreateArt(data *Article) (code int) {
 
 // 查询分类下所有文章
 func GetCateArt(id int, pageSize int, pageNum int) ([]Article, int, int) {
+	//var catArtList []Article
+	//var total int
+	//err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum-1)*pageSize).Where("Cid=?", id).Find(&catArtList).Count(&total).Error
+	//if err != nil {
+	//	return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+	//}
+	//return catArtList, errmsg.SUCCESS, total
 	var catArtList []Article
 	var total int
-	err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum-1)*pageSize).Where("Cid=?", id).Find(&catArtList).Count(&total).Error
+	var err error
+	if pageNum <= 0 {
+		pageNum = 1
+	}
+	offset := (pageNum - 1) * pageSize
+	err = global.Db.Limit(pageSize).Offset(offset).Where("Cid=?", id).Find(&catArtList).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+		}
+		return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
+	}
+	err = global.Db.Model(&Article{}).Count(&total).Error
 	if err != nil {
 		return nil, errmsg.ERROR_CATE_NOT_EXIST, 0
 	}
@@ -51,13 +71,35 @@ func GetArtInfo(id int) (Article, int) {
 
 // 查询文章列表
 func GetArts(pageSize int, pageNum int) ([]Article, int, int) {
-	var arts []Article
+	//var arts []Article
+	//var total int
+	//err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&arts).Count(&total).Error
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return nil, errmsg.ERROR, 0
+	//}
+	//return arts, errmsg.SUCCESS, total
+	var articles []Article
 	var total int
-	err := global.Db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&arts).Count(&total).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, errmsg.ERROR, 0
+	var err error
+
+	if pageNum <= 0 {
+		pageNum = 1
 	}
-	return arts, errmsg.SUCCESS, total
+
+	err = global.Db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&articles).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errmsg.ERROR_ART_NOT_EXIST, 0
+		}
+		return nil, errmsg.ERROR_ART_NOT_EXIST, 0
+	}
+
+	err = global.Db.Model(&Article{}).Count(&total).Error
+	if err != nil {
+		return nil, errmsg.ERROR_ART_NOT_EXIST, 0
+	}
+
+	return articles, errmsg.SUCCESS, total
 }
 
 // 编辑文章
