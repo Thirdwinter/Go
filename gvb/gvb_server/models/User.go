@@ -45,6 +45,13 @@ func CheckUser(username string) (code int) {
 	return errmsg.SUCCESS
 }
 
+// 根据用户名查询用户
+func SearchUser(username string) User {
+	var user User
+	global.Db.Where("username = ?", username).First(&user)
+	return user
+}
+
 // 更新时检查用户名是否重复
 func CheckUserEdit(username string, id int) (code int) {
 	var users User

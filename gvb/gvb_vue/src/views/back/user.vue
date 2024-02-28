@@ -1,4 +1,14 @@
 <template>
+  <div style="padding: 5px">
+    <n-input placeholder="搜索" v-model:value="search_name">
+      <template #prefix>
+        <n-icon :component="FlashOutline" />
+      </template>
+    </n-input>
+    <n-button type="info" @click="search">
+      让我康康!
+    </n-button>
+  </div>
   <div>
     <n-table :bordered="false" :single-line="false">
       <thead>
@@ -27,7 +37,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from "vue";
+import { ref, onMounted, inject} from "vue";
+import { FlashOutline } from "@vicons/ionicons5";
 
 const axios = inject("axios");
 const userlist = ref([]);
@@ -75,4 +86,34 @@ const handlePageSizeUpdate = (newPageSize) => {
   loadDatas(newPageSize, 1);
 };
 
+const search_name = ref('');
+
+const searchname = async (username) => {
+  // 从本地存储获取JWT
+  const jwt = localStorage.getItem('token');
+
+  const uinfo = await axios.get("/searchuser", {
+    params: {
+      username: username,
+    },
+    headers: {
+      Authorization: `Bearer ${jwt}` // 设置Authorization头部为Bearer加上JWT
+    }
+  });
+
+  return uinfo.data; // 返回获取的数据
+}
+
+
+  const search = () => {
+    console.log("search", search_name.value);
+    const uinfoPromise = searchname(search_name.value); // 返回一个Promise对象
+
+    uinfoPromise.then(uinfo => {
+      console.log(uinfo);
+      console.log("ok");
+    }).catch(error => {
+      console.error("Error:", error);
+    });
+  };
 </script>

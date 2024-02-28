@@ -102,3 +102,14 @@ func DeleteUser(c *gin.Context) {
 		"msg":    errmsg.GetErrMsg(code),
 	})
 }
+
+func SearchUser(c *gin.Context) {
+	name := c.Query("username")
+	user := models.SearchUser(name)
+	code = errmsg.SUCCESS
+	c.JSON(200, gin.H{
+		"status": code,
+		"data":   user,
+		"msg":    errmsg.GetErrMsg(code),
+	})
+}
