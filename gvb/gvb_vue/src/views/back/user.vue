@@ -5,9 +5,15 @@
         <n-icon :component="FlashOutline" />
       </template>
     </n-input>
-    <n-button type="info" @click="search">
-      让我康康!
-    </n-button>
+    <div style="display: flex;">
+      <n-button type="info" @click="search" style="margin-right: 10px;">
+        让我康康!
+      </n-button>
+      <n-button type="info" @click="letnil">
+        清空
+      </n-button>
+    </div>
+
   </div>
   <div>
     <n-table :bordered="false" :single-line="false">
@@ -45,6 +51,7 @@ const userlist = ref([]);
 const pagecount = ref(0);
 const page = ref(1);
 const pageSize = ref(1);
+const msg = inject("message")
 
 const pagesize = [
   { label: "1 每页", value: 1 },
@@ -102,18 +109,57 @@ const searchname = async (username) => {
   });
 
   return uinfo.data; // 返回获取的数据
+
 }
 
 
-  const search = () => {
+const search = () => {
+  if (search_name.value.trim() !== '') {
     console.log("search", search_name.value);
     const uinfoPromise = searchname(search_name.value); // 返回一个Promise对象
 
     uinfoPromise.then(uinfo => {
+      if (uinfo.data.ID===0){
+        msg.error("未查找到用户")
+        letnil()
+        return
+      }
       console.log(uinfo);
       console.log("ok");
+
+      // 更新userlist数据
+      userlist.value = Array.isArray(uinfo.data) ? uinfo.data : [uinfo.data];
+
+      // 定位到查询结果所在的那一页
+      const resultIndex = userlist.value.findIndex(user => user.username === search_name.value);
+      if (resultIndex !== -1) {
+        page.value = Math.ceil((resultIndex + 1) / pageSize.value);
+        console.log("定位")
+      }
+
+      // // 标记查询结果所在的那一栏
+      // // 例如，给查询结果所在的行添加一个标记，比如isHighlighted字段
+      // userlist.value.forEach(user => {
+      //   if (user.username === search_name.value) {
+      //     user.isHighlighted = true;
+      //   } else {
+      //     user.isHighlighted = false;
+      //   }
+      // });
+
+      // 重新加载数据
+      //loadDatas(pageSize.value, page.value);
     }).catch(error => {
       console.error("Error:", error);
     });
-  };
+  } else {
+    console.log("搜索内容为空，不执行查询操作");
+  }
+};
+
+const letnil=()=>{
+  search_name.value=''
+}
 </script>
+<style>
+</style>

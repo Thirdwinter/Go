@@ -4,11 +4,11 @@
         <n-card title="后台登录" class="login-box">
             <n-form :rules="rules" :model="admin">
                 <n-form-item path="username" label="用户名">
-                    <n-input v-model:value="admin.username" placeholder="请输入用户名"></n-input>
+                    <n-input v-model:value="admin.username" placeholder="请输入用户名" autocomplete="username"></n-input>
                 </n-form-item>
 
                 <n-form-item path="password" label="密码">
-                    <n-input v-model:value="admin.password" placeholder="请输入密码"></n-input>
+                    <n-input v-model:value="admin.password" placeholder="请输入密码" autocomplete="current-password"></n-input>
                 </n-form-item>
             </n-form>
             <template #footer>
