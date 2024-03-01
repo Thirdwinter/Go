@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 
 let routes = [
+  { path: "/", component: () => import("../views/index.vue") },
   { path: "/login", component: () => import("../views/login.vue") },
   { path: "/admin",
     component: () => import("../views/admin.vue"),
@@ -9,6 +10,7 @@ let routes = [
       { path: "/admin/article", component: () => import("../views/back/article.vue") },
       { path: "/admin/category", component: () => import("../views/back/category.vue") },
       { path: "/admin/user", component: () => import("../views/back/user.vue") },
+
       //{ path: "users", component: () => import("../views/users.vue") },
     ]
   }
