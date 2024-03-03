@@ -73,10 +73,10 @@ func GetArticle(c *gin.Context) {
 	data, code, total := models.GetArts(pageSize, pageNum)
 	//code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
-		"status": code,
-		"data":   data,
-		"total":  total,
-		"msg":    errmsg.GetErrMsg(code),
+		"code":  code,
+		"data":  data,
+		"total": total,
+		"msg":   errmsg.GetErrMsg(code),
 	})
 }
 
@@ -90,8 +90,8 @@ func EditArticle(c *gin.Context) {
 	}
 	code = models.EditArt(id, &data)
 	c.JSON(200, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"code": code,
+		"msg":  errmsg.GetErrMsg(code),
 	})
 }
 
@@ -101,14 +101,14 @@ func DeleteArticle(c *gin.Context) {
 	code = models.DeleteArt(id)
 	if id == 0 {
 		c.JSON(200, gin.H{
-			"status": errmsg.ERROR,
-			"msg":    "请求错误！",
+			"code": errmsg.ERROR,
+			"msg":  "请求错误！",
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"status": code,
-		"data":   "",
-		"msg":    errmsg.GetErrMsg(code),
+		"code": code,
+		"data": "",
+		"msg":  errmsg.GetErrMsg(code),
 	})
 }

@@ -7,18 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Login(c *gin.Context){
+func Login(c *gin.Context) {
 	var data models.User
 	_ = c.ShouldBindJSON(&data)
-	var token string
+	var atoken string
+	var rtoken string
 	var code int
-	code=models.CheckLogin(data.Username, data.Password)
-	if code == errmsg.SUCCESS{
-		token,code=middleware.SetToken(data.Username)
+	code = models.CheckLogin(data.Username, data.Password)
+	if code == errmsg.SUCCESS {
+		atoken, rtoken, code = middleware.SetToken(data.Username)
 	}
 	c.JSON(200, gin.H{
-		"status":code,
-		"msg":errmsg.GetErrMsg(code),
-		"token":token,
+		"code":   code,
+		"msg":    errmsg.GetErrMsg(code),
+		"atoken": atoken,
+		"rtoken": rtoken,
 	})
 }

@@ -4,8 +4,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 let routes = [
   { path: "/", component: () => import("../views/index.vue") },
   { path: "/login", component: () => import("../views/login.vue") },
-  { path: "/admin",
-    component: () => import("../views/admin.vue"),
+  { path: "/admin", component: () => import("../views/admin.vue"),
     children: [
       { path: "/admin/article", component: () => import("../views/back/article.vue") },
       { path: "/admin/category", component: () => import("../views/back/category.vue") },
@@ -24,9 +23,9 @@ const router = createRouter({
 
 //路由守卫
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('atoken');
 
-  if (to.path !== '/login' && !token) {
+  if ((to.path === '/admin'||to.path==="/admin/article"||to.path==="/admin/user"||to.path==="/admin/category") && !token) {
     // 如果不是在登录页面且 token 不存在，则强制返回登录页面
     next('/login');
   } else {

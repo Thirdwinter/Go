@@ -58,11 +58,11 @@ html, body, .app {
 import { reactive ,inject} from 'vue'
 import {AdminStore} from "../stores/AdminStore";
 import {useRouter} from "vue-router";
-
+import as from "../plugins/axios"
 // const route = useRoute()
 const  router= useRouter()
 const  adminstore = AdminStore()
-const axios = inject("axios")
+//const axios = inject("axios")
 const  msg = inject("message")
 
 
@@ -85,7 +85,7 @@ const admin = reactive({
 })
 
 const login = async () => {
-    let result = await axios.post("/login", {
+    let result = await as.post("/login", {
         username: admin.username,
         password: admin.password,
     });
@@ -93,12 +93,13 @@ const login = async () => {
     if(admin.username==''||admin.password==''){
       msg.info("请输入登录信息")
     }else {
-      if (result.data.status==200){
-        adminstore.token = result.data.token
+      if (result.data.code==200){
+        adminstore.atoken = result.data.atoken
+        adminstore.rtoken = result.data.rtoken
         adminstore.username = admin.username
-        localStorage.setItem("token",result.data.token)
+        localStorage.setItem("atoken",result.data.atoken)
+        localStorage.setItem("rtoken",result.data.rtoken)
         adminstore.remember = admin.remember
-        msg.info(result.data.msg)
         //console.log(adminstore.username,admin.password,adminstore.token,admin.remember)
         if (admin.remember){
           localStorage.setItem("username",adminstore.username)
@@ -109,7 +110,8 @@ const login = async () => {
           localStorage.setItem("username","")
           localStorage.setItem("password","")
         }
-        router.push("/admin")
+        router.push("admin")
+        msg.info(result.data.msg)
       }else {
         msg.error(result.data.msg)
       }

@@ -7,12 +7,12 @@ import (
 )
 
 func UpLoad(c *gin.Context) {
-	file,fileHeader,_:=c.Request.FormFile("file")
-	filesize:=fileHeader.Size
-	url,code:=service.UpLoadFile(file,filesize)
-	c.JSON(200,gin.H{
-		"status":code,
-		"msg":errmsg.GetErrMsg(code),
-		"url":url,
+	file, fileHeader, _ := c.Request.FormFile("file")
+	filesize := fileHeader.Size
+	url, code := service.UpLoadFile(file, filesize)
+	c.JSON(200, gin.H{
+		"code": code,
+		"msg":  errmsg.GetErrMsg(code),
+		"url":  url,
 	})
 }

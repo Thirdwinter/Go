@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"strings"
 	"time"
 
 	"github.com/ThirdWinter/Go/gvb_server/global"
@@ -11,98 +10,187 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	//JwtKey = []byte("abc")
-	code   int
-)
-
-
-// func init(){
-// 	log.Error("jwtkey:%v",global.Config.System.JwtKey)
-// }
+//var (
+//	code int
+//)
 
 type MyClaims struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
-func Jwt()[]byte{
+
+func Jwt() []byte {
 	return []byte(global.Config.System.JwtKey)
 }
+
 // 生成token
-func SetToken(username string) (string, int) {
-	expireTime := time.Now().Add(10 * time.Hour)
+func SetToken(username string) (string, string, int) {
+	expireTime := time.Now().Add(10 * time.Second)
+	r_expireTime := time.Now().Add(20 * time.Hour)
 	SetClaims := MyClaims{
 		Username: username,
-		//Password: password,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			Issuer:    "ginblog",
 		},
 	}
-	reqClaim := jwt.NewWithClaims(jwt.SigningMethodHS256, SetClaims)
-	token, err := reqClaim.SignedString(Jwt())
-	if err != nil {
-		return "", errmsg.ERROR
+	// 创建签名对象
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, SetClaims)
+	// 生成token
+	a_Token, aerr := token.SignedString(Jwt())
+	// 生成token错误处理逻辑
+	if aerr != nil {
+		return "", "", errmsg.ERROR_TOKEN_CREATE
 	}
-	return token, errmsg.SUCCESS
+	// rToken 不需要存储任何自定义数据
+	// rtoken生成错误时返回空
+	r_Token, rerr := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		ExpiresAt: r_expireTime.Unix(),
+		Issuer:    "ginblog",
+	}).SignedString(Jwt())
+	if rerr != nil {
+		return a_Token, "", errmsg.SUCCESS
+	}
+	return a_Token, r_Token, errmsg.SUCCESS
 }
 
-// 验证token
+// 验证atoken
 func CheckToken(token string) (*MyClaims, int) {
-	setToken, _ := jwt.ParseWithClaims(token, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
+	//setToken, err := jwt.ParseWithClaims(atoken, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
+	//	return Jwt(), nil
+	//})
+	//
+	//if err != nil {
+	//	if ve, ok := err.(*jwt.ValidationError); ok {
+	//		if ve.Errors == jwt.ValidationErrorExpired {
+	//			// Token已过期
+	//
+	//			return nil, errmsg.ERROR_TOKEN_LONGTIME
+	//		}
+	//	}
+	//	return nil, errmsg.ERROR_TOKEN_TYPE_WRONG
+	//}
+	//
+	//if _, _ = setToken.Claims.(*MyClaims); setToken.Valid {
+	//	return nil, errmsg.SUCCESS
+	//} else {
+	//	return nil, errmsg.ERROR_TOKEN_WRONG
+	//}
+	claims := &MyClaims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return Jwt(), nil
 	})
-	if key, _ := setToken.Claims.(*MyClaims); setToken.Valid {
-		return key, errmsg.SUCCESS
-	} else {
-		return nil, errmsg.ERROR
+	if claims == nil {
+		return nil, errmsg.ERROR_TOKEN_TYPE_WRONG
 	}
+	if err != nil {
+		if ve, ok := err.(*jwt.ValidationError); ok {
+			if ve.Errors&jwt.ValidationErrorExpired != 0 {
+				// Token 已过期
+				return nil, errmsg.ERROR_TOKEN_LONGTIME
+			}
+		}
+
+		// 其他验证错误
+		return nil, errmsg.ERROR_TOKEN_WRONG
+	}
+	return claims, errmsg.SUCCESS // token可以解析,但是有可能过期
+}
+
+// 刷新token
+// 如果at正常,直接放行;如果ak是过期错误且携带rk,校验rk,rk正确后返回新ak和rk,
+func RefreshToken(aToken string, rToken string) (newToken string, newRtoken string, code int) {
+	// 1. 判断rToken格式正确,没有错误
+	if _, err := jwt.Parse(rToken, func(token *jwt.Token) (interface{}, error) {
+		return Jwt(), nil
+	}); err != nil {
+		return "", "", errmsg.ERROR_TOKEN_NR
+	}
+
+	// 2. 从旧的aToken中解析出claims数据
+	var claims MyClaims
+	_, err := jwt.ParseWithClaims(aToken, &claims, func(token *jwt.Token) (interface{}, error) {
+		return Jwt(), nil
+	})
+	v, _ := err.(*jwt.ValidationError)
+
+	// 当atoken是过期错误,且rtoken没有过期就创建一个新的access token
+	if v.Errors == jwt.ValidationErrorExpired {
+		newAToken, newRToken, errCode := SetToken(claims.Username)
+		if errCode == errmsg.SUCCESS {
+			return newAToken, newRToken, errmsg.RTOKEN_SUCCESS
+		}
+		return "", "", errmsg.ERROR_TOKEN_NR
+	}
+
+	return "", "", errmsg.ERROR_TOKEN_NR
 }
 
 // jwt中间件
 func JwtToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenHerder := c.Request.Header.Get("Authorization")
-
-		if tokenHerder == "" {
-			code = errmsg.ERROR_TOKEN_EXIST
+		atoken := c.GetHeader("Authorization")
+		rtoken := c.GetHeader("RefreshAuthorization")
+		if len(atoken) == 0 {
 			c.JSON(200, gin.H{
-				"code": code,
-				"msg":  errmsg.GetErrMsg(code),
+				"msg":  "没有携带 atoken",
+				"code": errmsg.ERROR_TOKEN_EXIST, //未授权
 			})
 			c.Abort()
 			return
 		}
-		checkToken := strings.SplitN(tokenHerder, " ", 2)
-		if len(checkToken) != 2 && checkToken[0] != "Bearer" {
-			code = errmsg.ERROR_TOKEN_TYPE_WRONG
+		//校验正确
+		_, tCode := CheckToken(atoken)
+		switch tCode {
+		case 200:
+			{
+				//校验成功
+				c.Next()
+				return
+			}
+		case 4002:
+			{
+				if len(rtoken) == 0 {
+					c.JSON(200, gin.H{
+						"code": tCode,
+						"msg":  errmsg.GetErrMsg(tCode),
+					})
+					c.Abort()
+					return
+				} else if len(rtoken) != 0 {
+					//刷新
+					newAToken, newRToken, code := RefreshToken(atoken, rtoken)
+					if code != errmsg.RTOKEN_SUCCESS {
+						c.JSON(200, gin.H{
+							"msg":  "刷新错误,请重新登录",
+							"code": code,
+						})
+						c.Abort()
+						return
+					}
+					c.JSON(200, gin.H{
+						"msg":    errmsg.GetErrMsg(code),
+						"atoken": newAToken,
+						"rtoken": newRToken,
+						"code":   code,
+					})
+					c.Abort()
+					return
+				}
+			}
+		default:
 			c.JSON(200, gin.H{
-				"code": code,
-				"msg":  errmsg.GetErrMsg(code),
+				"code": tCode,
+				"msg":  errmsg.GetErrMsg(tCode),
 			})
 			c.Abort()
 			return
 		}
-		key, tCode := CheckToken(checkToken[1])
-		if tCode == errmsg.ERROR {
-			code = errmsg.ERROR_TOKEN_TYPE_WRONG
-			c.JSON(200, gin.H{
-				"code": code,
-				"msg":  errmsg.GetErrMsg(code),
-			})
-			c.Abort()
-			return
-		}
-		if time.Now().Unix() > key.ExpiresAt {
-			code = errmsg.ERROR_TOKEN_LONGTIME
-			c.JSON(200, gin.H{
-				"code": code,
-				"msg":  errmsg.GetErrMsg(code),
-			})
-			c.Abort()
-			return
-		}
-		c.Set("username", key.Username)
 		c.Next()
 	}
 }
+
+//"atoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzA5NDUxOTk0LCJpc3MiOiJnaW5ibG9nIn0.g6ln3LIv2-gQcNmDQFys0mv5w1Cj5tPEV5j0lkTrGZM",
+//"msg": "OK!",
+//"rtoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk1MjM5ODQsImlzcyI6ImdpbmJsb2cifQ.Kj_LbCkVNXEL086J7WhMRhWToge295iWz_VfiRV1puM",
+//"status": 200

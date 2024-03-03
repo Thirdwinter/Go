@@ -27,7 +27,7 @@ func AddCategory(c *gin.Context) {
 		code = errmsg.ERROR_CATENAME_USED
 	}
 	c.JSON(200, gin.H{
-		"status": code,
+		"code": code,
 		//"data":   data,
 		"msg": errmsg.GetErrMsg(code),
 	})
@@ -49,10 +49,10 @@ func GetCategory(c *gin.Context) {
 	data, total, code := models.GetCategory(pageSize, pageNum) // 返回一个[]user
 	//code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
-		"status": code,
-		"data":   data,
-		"total":  total,
-		"msg":    errmsg.GetErrMsg(code),
+		"code":  code,
+		"data":  data,
+		"total": total,
+		"msg":   errmsg.GetErrMsg(code),
 	})
 }
 
@@ -69,8 +69,8 @@ func EditCategory(c *gin.Context) {
 		c.Abort()
 	}
 	c.JSON(200, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"code": code,
+		"msg":  errmsg.GetErrMsg(code),
 	})
 }
 
@@ -80,15 +80,15 @@ func DeleteCategory(c *gin.Context) {
 	code = models.DeleteCategory(id)
 	if id == 0 {
 		c.JSON(200, gin.H{
-			"status": errmsg.ERROR,
-			"msg":    "请求错误！",
+			"code": errmsg.ERROR,
+			"msg":  "请求错误！",
 		})
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"status": code,
-		"data":   "",
-		"msg":    errmsg.GetErrMsg(code),
+		"code": code,
+		"data": "",
+		"msg":  errmsg.GetErrMsg(code),
 	})
 }

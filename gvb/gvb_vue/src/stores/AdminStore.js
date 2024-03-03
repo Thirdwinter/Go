@@ -4,7 +4,8 @@ export const AdminStore = defineStore("admin",{
         return {
             username:"",
             //password:"",
-            token:"",
+            atoken:"",
+            rtoken:"",
             //remember:"",
         }
     },

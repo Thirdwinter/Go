@@ -45,8 +45,11 @@
 <script setup>
 import { ref, onMounted, inject} from "vue";
 import { FlashOutline } from "@vicons/ionicons5";
+import {useRouter} from "vue-router";
+import as from "D:/Download/GOCODE/src/Go/gvb/gvb_vue/src/plugins/axios.js"
 
-const axios = inject("axios");
+const router = useRouter()
+//const axios = inject("axios");
 const userlist = ref([]);
 const pagecount = ref(0);
 const page = ref(1);
@@ -67,7 +70,7 @@ onMounted(() => {
 const loadDatas = async (pagesize, pagenum) => {
   try {
     console.log("Sending request with parameters: pagesize =", pagesize, "pagenum =", pagenum);
-    const res = await axios.get("/users", {
+    const res = await as.get("/users", {
       params: {
         pagesize: pagesize,
         pagenum: pagenum,
@@ -96,66 +99,44 @@ const handlePageSizeUpdate = (newPageSize) => {
 const search_name = ref('');
 
 const searchname = async (username) => {
-  // 从本地存储获取JWT
-  const jwt = localStorage.getItem('token');
-
-  const uinfo = await axios.get("/searchuser", {
+  let uinfo = await as.get("/searchuser", {
     params: {
       username: username,
     },
-    headers: {
-      Authorization: `Bearer ${jwt}` // 设置Authorization头部为Bearer加上JWT
-    }
+
   });
+  console.log(uinfo)
+  return uinfo.data;
+};
 
-  return uinfo.data; // 返回获取的数据
-
-}
 
 
 const search = () => {
   if (search_name.value.trim() !== '') {
     console.log("search", search_name.value);
-    const uinfoPromise = searchname(search_name.value); // 返回一个Promise对象
-
+    let uinfoPromise = searchname(search_name.value); // 返回一个Promise对象
     uinfoPromise.then(uinfo => {
-      if (uinfo.data.ID===0){
-        msg.error("未查找到用户")
-        letnil()
-        return
-      }
-      console.log(uinfo);
-      console.log("ok");
 
-      // 更新userlist数据
-      userlist.value = Array.isArray(uinfo.data) ? uinfo.data : [uinfo.data];
-
-      // 定位到查询结果所在的那一页
-      const resultIndex = userlist.value.findIndex(user => user.username === search_name.value);
-      if (resultIndex !== -1) {
-        page.value = Math.ceil((resultIndex + 1) / pageSize.value);
-        console.log("定位")
-      }
-
-      // // 标记查询结果所在的那一栏
-      // // 例如，给查询结果所在的行添加一个标记，比如isHighlighted字段
-      // userlist.value.forEach(user => {
-      //   if (user.username === search_name.value) {
-      //     user.isHighlighted = true;
-      //   } else {
-      //     user.isHighlighted = false;
-      //   }
-      // });
-
-      // 重新加载数据
-      //loadDatas(pageSize.value, page.value);
+        if (uinfo.data.ID === 0) {
+          msg.error("未查找到用户");
+          letnil();
+          return;
+        }
+        userlist.value = Array.isArray(uinfo.data) ? uinfo.data : [uinfo.data];
+        const resultIndex = userlist.value.findIndex(user => user.username === search_name.value);
+        if (resultIndex !== -1) {
+          page.value = Math.ceil((resultIndex + 1) / pageSize.value);
+          console.log("定位");
+        }
+        return;
     }).catch(error => {
-      console.error("Error:", error);
+      console.error("Error occurred:", error);
     });
   } else {
     console.log("搜索内容为空，不执行查询操作");
   }
 };
+
 
 const letnil=()=>{
   search_name.value=''

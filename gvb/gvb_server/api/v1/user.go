@@ -25,8 +25,8 @@ func AddUser(c *gin.Context) {
 	msg, code = validator.Validate(&data)
 	if code != errmsg.SUCCESS {
 		c.JSON(200, gin.H{
-			"status": code,
-			"msg":    msg,
+			"code": code,
+			"msg":  msg,
 		})
 		return
 	}
@@ -39,7 +39,7 @@ func AddUser(c *gin.Context) {
 		code = errmsg.ERROR_USERNAME_USED
 	}
 	c.JSON(200, gin.H{
-		"status": code,
+		"code": code,
 		//"data":   data,
 		"msg": errmsg.GetErrMsg(code),
 	})
@@ -59,10 +59,10 @@ func GetUsers(c *gin.Context) {
 	data, total := models.GetUsers(pageSize, pageNum) // 返回一个[]user
 	code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
-		"status": code,
-		"data":   data,
-		"total":  total,
-		"msg":    errmsg.GetErrMsg(code),
+		"code":  code,
+		"data":  data,
+		"total": total,
+		"msg":   errmsg.GetErrMsg(code),
 	})
 }
 
@@ -79,8 +79,8 @@ func EditUser(c *gin.Context) {
 		c.Abort()
 	}
 	c.JSON(200, gin.H{
-		"status": code,
-		"msg":    errmsg.GetErrMsg(code),
+		"code": code,
+		"msg":  errmsg.GetErrMsg(code),
 	})
 }
 
@@ -108,8 +108,8 @@ func SearchUser(c *gin.Context) {
 	user := models.SearchUser(name)
 	code = errmsg.SUCCESS
 	c.JSON(200, gin.H{
-		"status": code,
-		"data":   user,
-		"msg":    errmsg.GetErrMsg(code),
+		"code": code,
+		"data": user,
+		"msg":  errmsg.GetErrMsg(code),
 	})
 }
