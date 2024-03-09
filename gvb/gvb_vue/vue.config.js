@@ -11,7 +11,7 @@ const { defineConfig } = require('@vue/cli-service')
 module.exports = {
     devServer: {
       // 自动打开浏览器
-      open: true,
+      //open: true,
       port: 70,
       proxy: {
         // // detail: https://cli.vuejs.org/config/#devserver-proxy

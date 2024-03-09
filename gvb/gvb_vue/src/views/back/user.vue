@@ -46,7 +46,8 @@
 import { ref, onMounted, inject} from "vue";
 import { FlashOutline } from "@vicons/ionicons5";
 import {useRouter} from "vue-router";
-import as from "D:/Download/GOCODE/src/Go/gvb/gvb_vue/src/plugins/axios.js"
+//import as from "D:/Download/GOCODE/src/Go/gvb/gvb_vue/src/plugins/axios.js"
+import as from "../../plugins/axios"
 
 const router = useRouter()
 //const axios = inject("axios");
