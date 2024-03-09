@@ -56,26 +56,6 @@ func SetToken(username string) (string, string, int) {
 
 // 验证atoken
 func CheckToken(token string) (*MyClaims, int) {
-	//setToken, err := jwt.ParseWithClaims(atoken, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
-	//	return Jwt(), nil
-	//})
-	//
-	//if err != nil {
-	//	if ve, ok := err.(*jwt.ValidationError); ok {
-	//		if ve.Errors == jwt.ValidationErrorExpired {
-	//			// Token已过期
-	//
-	//			return nil, errmsg.ERROR_TOKEN_LONGTIME
-	//		}
-	//	}
-	//	return nil, errmsg.ERROR_TOKEN_TYPE_WRONG
-	//}
-	//
-	//if _, _ = setToken.Claims.(*MyClaims); setToken.Valid {
-	//	return nil, errmsg.SUCCESS
-	//} else {
-	//	return nil, errmsg.ERROR_TOKEN_WRONG
-	//}
 	claims := &MyClaims{}
 	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return Jwt(), nil

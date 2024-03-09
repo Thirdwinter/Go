@@ -50,10 +50,10 @@ import as from "D:/Download/GOCODE/src/Go/gvb/gvb_vue/src/plugins/axios.js"
 
 const router = useRouter()
 //const axios = inject("axios");
-const userlist = ref([]);
-const pagecount = ref(0);
-const page = ref(1);
-const pageSize = ref(1);
+let userlist = ref([]);
+let pagecount = ref(0);
+let page = ref(1);
+let pageSize = ref(1);
 const msg = inject("message")
 
 const pagesize = [
@@ -69,14 +69,14 @@ onMounted(() => {
 
 const loadDatas = async (pagesize, pagenum) => {
   try {
-    console.log("Sending request with parameters: pagesize =", pagesize, "pagenum =", pagenum);
+    //console.log("Sending request with parameters: pagesize =", pagesize, "pagenum =", pagenum);
     const res = await as.get("/users", {
       params: {
         pagesize: pagesize,
         pagenum: pagenum,
       }
     });
-    console.log("Response data:", res.data);
+    //console.log("Response data:", res.data);
     userlist.value = res.data.data;
     pagecount.value = Math.ceil(res.data.total / pagesize);
   } catch (error) {
@@ -92,7 +92,7 @@ const handlePageUpdate = (newPage) => {
 
 const handlePageSizeUpdate = (newPageSize) => {
   pageSize.value = newPageSize;
-  page.value=1
+  // page.value=1
   loadDatas(newPageSize, 1);
 };
 
@@ -125,7 +125,7 @@ const search = () => {
         userlist.value = Array.isArray(uinfo.data) ? uinfo.data : [uinfo.data];
         const resultIndex = userlist.value.findIndex(user => user.username === search_name.value);
         if (resultIndex !== -1) {
-          page.value = Math.ceil((resultIndex + 1) / pageSize.value);
+          page = ref(Math.ceil((resultIndex + 1) / pageSize.value));
           console.log("定位");
         }
         return;
