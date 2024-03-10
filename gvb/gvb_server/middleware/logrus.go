@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 )
-
+//!已弃用
 // Logger 日志中间件
 // todo 可考虑更换其他日志中间件
 func Logrus() gin.HandlerFunc {
