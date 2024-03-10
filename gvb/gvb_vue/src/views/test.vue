@@ -23,13 +23,14 @@
   </template>
   
   <script>
-  import as from '../plugins/axios';
-  
-  // 创建axios实例
-  // const service = axios.create({
-  //   baseURL: '/Api',
-  //   timeout: 10000
-  // });
+  //import as from '../plugins/axios';
+
+  import axios from 'axios';
+  //创建axios实例
+  const service = axios.create({
+    baseURL: '/Api',
+    timeout: 10000
+  });
   
   export default {
     data() {
@@ -42,7 +43,7 @@
     },
     methods: {
       login() {
-        as.post('/login', { username: this.username, password: this.password })
+        service.post('/login', { username: this.username, password: this.password })
           .then(response => {
             console.log(response);
             // Store the generated token in a cookie
@@ -52,7 +53,7 @@
           });
       },
       searchUser() {
-        as.get('/searchuser', {
+        service.get('/searchuser', {
           withCredentials: true,
           params: {
             username: this.searchUsername
