@@ -66,7 +66,7 @@ let menus = [
 ];
 const topage=(menu)=>{
   if(menu.href=="logout"){
-    localStorage.removeItem("token")
+    //localStorage.removeItem("token")
     router.push("/login")
   }else {
     router.push(menu.href)

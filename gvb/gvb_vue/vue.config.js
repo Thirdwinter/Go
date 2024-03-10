@@ -12,11 +12,10 @@ module.exports = {
     devServer: {
       // 自动打开浏览器
       //open: true,
-      port: 70,
+      port: 8081,
       proxy: {
-        // // detail: https://cli.vuejs.org/config/#devserver-proxy
         '/Api': {
-          target: `http://localhost:8080/api/v1`,
+          target: `http://47.93.40.133:8080/api/v1`,
           changeOrigin: true,
           pathRewrite: {
             '^/Api': ''

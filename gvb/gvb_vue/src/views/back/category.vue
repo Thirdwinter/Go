@@ -17,16 +17,15 @@
   </div>
 </template>
 <script setup>
-import {ref,onMounted,inject} from "vue";
-
-const axios = inject("axios")
+import {ref,onMounted} from "vue";
+import as from "@/plugins/axios";
 const categorylist = ref([])
 
 onMounted(()=>{
   loadDatas()
 })
 const loadDatas = async ()=>{
-  let res = await axios.get("/category")
+  let res = await as.get("/category")
   categorylist.value = res.data.data
   console.log(res)
 }

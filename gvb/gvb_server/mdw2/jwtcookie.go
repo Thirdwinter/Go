@@ -46,8 +46,7 @@ func SetToken(username string) (string, int) {
 
 // 验证atoken
 func CheckToken(token string) (*MyClaims, int) {
-	claims := &MyClaims{}
-	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+	claims, err := jwt.ParseWithClaims(token, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return Jwt(), nil
 	})
 	if claims == nil {
@@ -64,7 +63,7 @@ func CheckToken(token string) (*MyClaims, int) {
 		// 其他验证错误
 		return nil, errmsg.ERROR_TOKEN_WRONG
 	}
-	return claims, errmsg.SUCCESS
+	return nil, errmsg.SUCCESS
 }
 
 // jwt中间件

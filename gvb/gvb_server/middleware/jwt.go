@@ -54,10 +54,10 @@ func SetToken(username string) (string, string, int) {
 	return a_Token, r_Token, errmsg.SUCCESS
 }
 
-// 验证atoken
+// 验证token
 func CheckToken(token string) (*MyClaims, int) {
-	claims := &MyClaims{}
-	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+	
+	claims, err := jwt.ParseWithClaims(token, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return Jwt(), nil
 	})
 	if claims == nil {
@@ -69,13 +69,15 @@ func CheckToken(token string) (*MyClaims, int) {
 				// Token 已过期
 				return nil, errmsg.ERROR_TOKEN_LONGTIME
 			}
+			// 其他验证错误
+			return nil, errmsg.ERROR_TOKEN_WRONG
 		}
-
-		// 其他验证错误
-		return nil, errmsg.ERROR_TOKEN_WRONG
 	}
-	return claims, errmsg.SUCCESS // token可以解析,但是有可能过期
+
+	// 处理正常情况
+	return nil, errmsg.SUCCESS // token可以解析,但是有可能过期
 }
+
 
 // 刷新token
 // 如果at正常,直接放行;如果ak是过期错误且携带rk,校验rk,rk正确后返回新ak和rk,

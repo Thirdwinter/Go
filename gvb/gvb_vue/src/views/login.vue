@@ -113,11 +113,11 @@ const login = async () => {
       msg.info("请输入登录信息")
     }else {
       if (result.data.code==200){
-        adminstore.atoken = result.data.atoken
-        adminstore.rtoken = result.data.rtoken
+        // adminstore.atoken = result.data.atoken
+        // adminstore.rtoken = result.data.rtoken
         adminstore.username = admin.username
-        localStorage.setItem("atoken",result.data.atoken)
-        localStorage.setItem("rtoken",result.data.rtoken)
+        // localStorage.setItem("atoken",result.data.atoken)
+        // localStorage.setItem("rtoken",result.data.rtoken)
         adminstore.remember = admin.remember
         //console.log(adminstore.username,admin.password,adminstore.token,admin.remember)
         if (admin.remember){

@@ -2,11 +2,11 @@ import axios from 'axios';
 import { router } from '../router/index';
 
 const as = axios.create({
-    baseURL: 'http://localhost:8080/api/v1',
+    //baseURL: 'http://localhost:8080/api/v1',
     timeout: 5000,
     headers: {
         'Content-Type': 'application/json;charset=utf-8',
-        'Authorization':'',
+        //'Authorization':'',
         //'RefreshAuthorization':'',
     },
 });
@@ -15,20 +15,20 @@ let rtoken = localStorage.getItem('rtoken');
 
 // 请求拦截
 as.interceptors.request.use(
-    config => {
-        let atoken = localStorage.getItem('atoken');
-        let rtoken = localStorage.getItem('rtoken');
-            config.headers.Authorization = localStorage.getItem('atoken'); // 添加 Authorization 头部
-            //config.headers.RefreshAuthorization = localStorage.getItem('rtoken'); // 添加 Authorization 头部
-            console.log("已添加 Authorization 头部:", config.headers.Authorization);
-            console.log("已添加 RefreshAuthorization 头部:", config.headers.RefreshAuthorization);
-            return config;
+    // config => {
+    //     let atoken = localStorage.getItem('atoken');
+    //     let rtoken = localStorage.getItem('rtoken');
+    //         config.headers.Authorization = localStorage.getItem('atoken'); // 添加 Authorization 头部
+    //         //config.headers.RefreshAuthorization = localStorage.getItem('rtoken'); // 添加 Authorization 头部
+    //         console.log("已添加 Authorization 头部:", config.headers.Authorization);
+    //         console.log("已添加 RefreshAuthorization 头部:", config.headers.RefreshAuthorization);
+    //         return config;
 
-        // return config;
-    },
-    error => {
-        return Promise.reject(error);
-    }
+    //     // return config;
+    // },
+    // error => {
+    //     return Promise.reject(error);
+    // }
 );
 
 
@@ -92,18 +92,36 @@ as.interceptors.response.use(
                     break;
                 case 4002:
                     console.log("4002:", responseData.code);
-                    // 在请求头中加入 RefreshAuthorization 字段
-                    newConfig.headers.RefreshAuthorization = localStorage.getItem('rtoken');
-                    // 重新发送请求
-                    // 注意：返回新的配置，避免再次进入响应拦截器
-                    return as(newConfig);
+                    // // 在请求头中加入 RefreshAuthorization 字段
+                    // newConfig.headers.RefreshAuthorization = localStorage.getItem('rtoken');
+                    // // 重新发送请求
+                    // // 注意：返回新的配置，避免再次进入响应拦截器
+                // return as(newConfig);
+                    localStorage.removeItem("atoken")
+                    localStorage.removeItem("rtoken")
+                    router.replace({
+                        path: '/login',
+                        query: {
+                            redirect: router.currentRoute.value.fullPath
+                        }
+                    });
+                    break;
                 case 4005:
                     console.log("4005:",responseData.code)
-                    // localStorage.removeItem("atoken");
-                    // localStorage.removeItem("rtoken");
-                    localStorage.setItem("atoken",responseData.atoken);
-                    localStorage.setItem("rtoken",responseData.rtoken);
-                    return as(response.config);
+                    // // localStorage.removeItem("atoken");
+                    // // localStorage.removeItem("rtoken");
+                    // localStorage.setItem("atoken",responseData.atoken);
+                    // localStorage.setItem("rtoken",responseData.rtoken);
+                    // return as(response.config);
+                    localStorage.removeItem("atoken")
+                    localStorage.removeItem("rtoken")
+                    router.replace({
+                        path: '/login',
+                        query: {
+                            redirect: router.currentRoute.value.fullPath
+                        }
+                    });
+                    break;
                 default:
                     console.log("default:")
                     // 处理其他情况
